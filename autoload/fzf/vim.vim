@@ -550,14 +550,14 @@ function! fzf#vim#gitfiles(args, ...)
   " We're trying to access the common sink function that skim#wrap injects to
   " the options dictionary.
   let wrapped = skim#wrap({
-  \ 'source':  'git -c color.status=always status --short --untracked-files=all',
+  \ 'source':  "{ git diff --name-status; git diff --name-status HEAD..$DEFAULT_BRANCH; } | sort | uniq | sed '/^D/d'",
   \ 'dir':     root,
   \ 'options': ['--ansi', '--multi', '--nth', '2..,..', '--tiebreak=index', '--prompt', 'GitFiles?> ', '--preview', 'sh -c "(git diff --color=always -- {-1} | sed 1,4d; cat {-1}) | head -500"']
   \})
   call s:remove_layout(wrapped)
   let wrapped.common_sink = remove(wrapped, 'sink*')
   function! wrapped.newsink(lines)
-    let lines = extend(a:lines[0:0], map(a:lines[1:], 'substitute(v:val[3:], ".* -> ", "", "")'))
+    let lines = extend(a:lines[0:0], map(a:lines[1:], 'substitute(v:val[2:], ".* -> ", "", "")'))
     return self.common_sink(lines)
   endfunction
   let wrapped['sink*'] = remove(wrapped, 'newsink')
