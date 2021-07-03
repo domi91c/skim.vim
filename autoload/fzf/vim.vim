@@ -643,7 +643,7 @@ endfunction
 function! s:ag_to_qf(line, with_column)
   let parts = split(a:line, ':')
   let text = join(parts[(a:with_column ? 3 : 2):], ':')
-  let dict = {'filename': &acd ? fnamemodify(parts[0], ':p') : parts[0], 'lnum': parts[1], 'text': text}
+  let dict = {'filename': fnamemodify(parts[0], ':p'), 'lnum': parts[1], 'text': text}
   if a:with_column
     let dict.col = parts[2]
   endif
